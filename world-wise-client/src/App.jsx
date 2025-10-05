@@ -5,6 +5,7 @@ import SpinnerFullPage from "./components/SpinnerFullPage.jsx";
 const Homepage = lazy(() => import("./pages/Homepage"));
 const Product = lazy(() => import("./pages/Product"));
 const Pricing = lazy(() => import("./pages/Pricing"));
+const Signup = lazy(() => import("./pages/Signup"));
 
 function App() {
 
@@ -15,6 +16,7 @@ function App() {
             <Route index element={<Homepage />} />
             <Route path="/product" element={<Product />} />
             <Route path="/pricing" element={< Pricing/>} />
+            <Route path="/signup" element={<Signup />} />
         </Routes>
         </Suspense>
     </BrowserRouter>
