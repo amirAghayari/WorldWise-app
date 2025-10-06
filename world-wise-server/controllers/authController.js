@@ -14,7 +14,7 @@ const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
   const cookieOptions = {
     expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
     ),
     httpOnly: true,
   };
@@ -37,7 +37,7 @@ exports.signup = async (req, res, next) => {
       email: req.body.email,
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm,
-      role: req.body.role,
+      role: req.body.role || 'user',
     });
     createSendToken(newUser, 201, res);
   } catch (err) {
@@ -72,13 +72,18 @@ exports.protect = async (req, res, next) => {
       req.headers.authorization &&
       req.headers.authorization.startsWith('bearer')
     ) {
-      req.headers.authorization.split(' ')[1];
+      // extract token from Authorization header
+      token = req.headers.authorization.split(' ')[1];
     } else if (req.cookie.jwt) {
-      token = req.cookie.jwt;
+      // cookie-parser populates req.cookies
+      token = req.cookies && req.cookies.jwt;
     }
     if (!token) {
       return next(
-        new AppError('You are not logged in! Please log in to get access.', 401)
+        new AppError(
+          'You are not logged in! Please log in to get access.',
+          401,
+        ),
       );
     }
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
@@ -87,16 +92,20 @@ exports.protect = async (req, res, next) => {
       return next(
         new AppError(
           'The user belonging to this token does no longer exist.',
-          401
-        )
+          401,
+        ),
       );
     }
-    if (currentUser.changePasswordAfter(decoded.iat)) {
+    // changePasswordAfter can be synchronous; guard against missing method
+    if (
+      currentUser.changePasswordAfter &&
+      (await currentUser.changePasswordAfter(decoded.iat))
+    ) {
       return next(
         new AppError(
           'User recently changed password! Please log in again.',
-          401
-        )
+          401,
+        ),
       );
     }
 
@@ -111,7 +120,7 @@ exports.restrictTo = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return next(
-        new AppError('You do not have permission to perform this action', 403)
+        new AppError('You do not have permission to perform this action', 403),
       );
     }
     next();
@@ -136,7 +145,7 @@ exports.forgotPassword = async (req, res, next) => {
     await user.save({ validateBeforeSave: false });
 
     const resetURL = `${req.protocol}://${req.get(
-      'host'
+      'host',
     )}/api/v1/users/resetPassword/${resetToken}`;
 
     const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
@@ -159,7 +168,7 @@ exports.forgotPassword = async (req, res, next) => {
 
       return next(
         new AppError('There was an error sending the email. Try again later!'),
-        500
+        500,
       );
     }
   } catch (err) {
