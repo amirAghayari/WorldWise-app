@@ -5,42 +5,49 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import styles from "./Signup.module.css";
-import Spinner from "../components/Spinner";
+import Spinner from "../../components/Spinner";
 
-const schema = z.object({
-  firstname: z
-    .string()
-    .min(2, "First name must be at least 2 characters")
-    .max(50, "First name must be less than 50 characters")
-    .regex(/^[a-zA-Z\s]*$/, "First name can only contain letters and spaces"),
-  lastname: z
-    .string()
-    .min(2, "Last name must be at least 2 characters")
-    .max(50, "Last name must be less than 50 characters")
-    .regex(/^[a-zA-Z\s]*$/, "Last name can only contain letters and spaces"),
-  username: z
-    .string()
-    .min(3, "Username must be at least 3 characters")
-    .max(30, "Username must be less than 30 characters")
-    .regex(/^[a-zA-Z0-9_]*$/, "Username can only contain letters, numbers, and underscores"),
-  email: z
-    .string()
-    .email("Invalid email address")
-    .min(5, "Email is too short")
-    .max(100, "Email is too long"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .max(100, "Password is too long")
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/, 
-      "Password must contain at least one uppercase letter, one lowercase letter, and one number"),
-  passwordConfirm: z
-    .string()
-    .min(8, "Password confirmation must be at least 8 characters"),
-}).refine((data) => data.password === data.passwordConfirm, {
-  message: "Passwords don't match",
-  path: ["passwordConfirm"],
-});
+const schema = z
+  .object({
+    firstname: z
+      .string()
+      .min(2, "First name must be at least 2 characters")
+      .max(50, "First name must be less than 50 characters")
+      .regex(/^[a-zA-Z\s]*$/, "First name can only contain letters and spaces"),
+    lastname: z
+      .string()
+      .min(2, "Last name must be at least 2 characters")
+      .max(50, "Last name must be less than 50 characters")
+      .regex(/^[a-zA-Z\s]*$/, "Last name can only contain letters and spaces"),
+    username: z
+      .string()
+      .min(3, "Username must be at least 3 characters")
+      .max(30, "Username must be less than 30 characters")
+      .regex(
+        /^[a-zA-Z0-9_]*$/,
+        "Username can only contain letters, numbers, and underscores"
+      ),
+    email: z
+      .string()
+      .email("Invalid email address")
+      .min(5, "Email is too short")
+      .max(100, "Email is too long"),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .max(100, "Password is too long")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+        "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+      ),
+    passwordConfirm: z
+      .string()
+      .min(8, "Password confirmation must be at least 8 characters"),
+  })
+  .refine((data) => data.password === data.passwordConfirm, {
+    message: "Passwords don't match",
+    path: ["passwordConfirm"],
+  });
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -69,7 +76,7 @@ export default function Signup() {
     try {
       setIsLoading(true);
       setServerError("");
-      
+
       const res = await axios.post("/api/v1/users/signup", {
         ...data,
         role: "user",
@@ -84,7 +91,9 @@ export default function Signup() {
         }, 2000);
       }
     } catch (err) {
-      const errorMessage = err.response?.data?.message || "An error occurred during signup. Please try again.";
+      const errorMessage =
+        err.response?.data?.message ||
+        "An error occurred during signup. Please try again.";
       setServerError(errorMessage);
       console.error("Signup error:", err);
     } finally {
@@ -95,7 +104,7 @@ export default function Signup() {
   return (
     <div className={styles.signupContainer}>
       <h2 className={styles.title}>Create Your Account</h2>
-      
+
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
         <div className={styles.inputGroup}>
           <input
@@ -171,15 +180,13 @@ export default function Signup() {
             disabled={isLoading}
           />
           {errors.passwordConfirm && (
-            <span className={styles.error}>{errors.passwordConfirm.message}</span>
+            <span className={styles.error}>
+              {errors.passwordConfirm.message}
+            </span>
           )}
         </div>
 
-        {serverError && (
-          <div className={styles.serverError}>
-            {serverError}
-          </div>
-        )}
+        {serverError && <div className={styles.serverError}>{serverError}</div>}
 
         {signupSuccess && (
           <div className={styles.successMessage}>

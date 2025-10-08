@@ -5,7 +5,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import styles from "./Login.module.css";
-import Spinner from "../components/Spinner";
+import Spinner from "../../components/Spinner";
 
 const schema = z.object({
   email: z
@@ -42,7 +42,7 @@ export default function Login() {
     try {
       setIsLoading(true);
       setServerError("");
-      
+
       const res = await axios.post("/api/v1/users/login", data);
 
       if (res?.data?.token) {
@@ -53,15 +53,15 @@ export default function Login() {
         }
         setLoginSuccess(true);
         reset();
-        
+
         // Delay navigation to show success message
         setTimeout(() => {
           navigate("/");
         }, 1500);
       }
     } catch (err) {
-      const errorMessage = 
-        err.response?.data?.message || 
+      const errorMessage =
+        err.response?.data?.message ||
         "Invalid email or password. Please try again.";
       setServerError(errorMessage);
       console.error("Login error:", err);
@@ -73,7 +73,7 @@ export default function Login() {
   return (
     <div className={styles.loginContainer}>
       <h2 className={styles.title}>Welcome Back</h2>
-      
+
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
         <div className={styles.inputGroup}>
           <input
@@ -101,11 +101,7 @@ export default function Login() {
           )}
         </div>
 
-        {serverError && (
-          <div className={styles.serverError}>
-            {serverError}
-          </div>
-        )}
+        {serverError && <div className={styles.serverError}>{serverError}</div>}
 
         {loginSuccess && (
           <div className={styles.successMessage}>
@@ -130,7 +126,9 @@ export default function Login() {
 
       <div className={styles.footer}>
         Don't have an account?
-        <Link to="/signup">Sign up here</Link>
+        <Link to="/signup" className={styles.link}>
+          Sign up here
+        </Link>
       </div>
     </div>
   );
