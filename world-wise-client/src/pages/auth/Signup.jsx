@@ -87,7 +87,7 @@ export default function Signup() {
         setSignupSuccess(true);
         reset();
         setTimeout(() => {
-          navigate("/");
+          navigate("/app");
         }, 2000);
       }
     } catch (err) {

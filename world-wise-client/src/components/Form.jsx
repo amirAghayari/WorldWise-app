@@ -11,8 +11,8 @@ import styles from "./Form.module.css";
 import { useUrlPosition } from "../hooks/useUrlPosition";
 import Message from "./Message";
 import Spinner from "./Spinner";
-import { useCities } from "../contexts/CitiesContext";
 import { useNavigate } from "react-router-dom";
+import { useCities } from "../contexts/CitiesContext";
 
 export const convertToEmoji = (countryCode) => {
   const codePoints = countryCode

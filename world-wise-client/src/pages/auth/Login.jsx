@@ -56,7 +56,7 @@ export default function Login() {
 
         // Delay navigation to show success message
         setTimeout(() => {
-          navigate("/");
+          navigate("/app");
         }, 1500);
       }
     } catch (err) {

@@ -32,3 +32,16 @@
   color: var(--color-light--1);
   margin-bottom: 2.5rem;
 }
+
+.pageNotFound {
+  height: calc(100vh - 5rem);
+  margin: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.pageNotFound h1 {
+  font-size: 4.5rem;
+  line-height: 1.3;
+}
