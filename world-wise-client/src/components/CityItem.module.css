@@ -1,6 +1,14 @@
+li {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+  margin-bottom: 1.6rem;
+}
+
 .cityItem,
 .cityItem:link,
 .cityItem:visited {
+  flex: 1; /* Allow the link to grow and take available space */
   display: flex;
   gap: 1.6rem;
   align-items: center;
@@ -28,7 +36,7 @@
 .name {
   font-size: 1.7rem;
   font-weight: 600;
-  margin-right: auto;
+  margin-right: auto; /* Pushes the date to the right */
 }
 
 .date {

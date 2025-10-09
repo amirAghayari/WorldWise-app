@@ -5,8 +5,7 @@ import {
   useReducer,
   useCallback,
 } from "react";
-
-const BASE_URL = "http://localhost:9000";
+import { BASE_URL } from "../config";
 
 const CitiesContext = createContext();
 
@@ -73,12 +72,14 @@ function CitiesProvider({ children }) {
       try {
         const res = await fetch(`${BASE_URL}/cities`);
         const data = await res.json();
+        console.log(data);
         dispatch({ type: "cities/loaded", payload: data });
-      } catch {
+      } catch (err) {
         dispatch({
           type: "rejected",
           payload: "There was an error loading cities...",
         });
+        console.error(err);
       }
     }
     fetchCities();
@@ -94,11 +95,12 @@ function CitiesProvider({ children }) {
         const res = await fetch(`${BASE_URL}/cities/${id}`);
         const data = await res.json();
         dispatch({ type: "city/loaded", payload: data });
-      } catch {
+      } catch (err) {
         dispatch({
           type: "rejected",
           payload: "There was an error loading the city...",
         });
+        console.error(err);
       }
     },
     [currentCity.id]
@@ -118,11 +120,12 @@ function CitiesProvider({ children }) {
       const data = await res.json();
 
       dispatch({ type: "city/created", payload: data });
-    } catch {
+    } catch (err) {
       dispatch({
         type: "rejected",
         payload: "There was an error creating the city...",
       });
+      console.error(err);
     }
   }
 
@@ -135,13 +138,16 @@ function CitiesProvider({ children }) {
       });
 
       dispatch({ type: "city/deleted", payload: id });
-    } catch {
+    } catch (err) {
       dispatch({
         type: "rejected",
         payload: "There was an error deleting the city...",
       });
+      console.error(err);
     }
   }
+
+  console.log(cities);
 
   return (
     <CitiesContext.Provider
