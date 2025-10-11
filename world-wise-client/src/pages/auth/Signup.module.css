@@ -31,7 +31,9 @@
   border: 1px solid var(--color-dark--0);
   border-radius: 4px;
   background-color: var(--color-dark--1);
-  color: var(--color-light--2);
+  color: var(--color-brand--2);
+  font-weight: 800;
+  transition: background-color 0.3s, color 0.3s;
   font-size: 1rem;
 }
 

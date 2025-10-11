@@ -39,7 +39,7 @@ exports.createOne = (model) => async (req, res, next) => {
   try {
     const doc = await model.create(req.body);
 
-    res.status(204).json({
+    res.status(201).json({
       status: 'success',
       data: {
         data: doc,
@@ -52,17 +52,16 @@ exports.createOne = (model) => async (req, res, next) => {
 
 exports.getOne = (model, popOption) => async (req, res, next) => {
   try {
-    let query = await model.findById(req.params.id);
+    let query = model.findById(req.params.id);
     if (popOption) query = query.populate(popOption);
+
     const doc = await query;
 
-    if (!doc) return next(new AppError('No document find with that ID', 404));
+    if (!doc) return next(new AppError('No document found with that ID', 404));
 
     res.status(200).json({
       status: 'success',
-      data: {
-        data: doc,
-      },
+      data: { data: doc },
     });
   } catch (err) {
     next(new AppError(err.message, 500));

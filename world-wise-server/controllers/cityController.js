@@ -1,14 +1,16 @@
 const City = require('../models/cityModel');
+const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 
 exports.getAllCities = async (req, res, next) => {
   try {
     const cities = await City.find();
+
     res.status(200).json({
       status: 'success',
       results: cities.length,
       data: {
-        cities,
+        cities: cities,
       },
     });
   } catch (err) {
@@ -24,9 +26,7 @@ exports.getCity = async (req, res, next) => {
     }
     res.status(200).json({
       status: 'success',
-      data: {
-        city,
-      },
+      data: { city },
     });
   } catch (err) {
     next(new AppError(err.message, 500));
@@ -38,9 +38,7 @@ exports.createCity = async (req, res, next) => {
     const newCity = await City.create(req.body);
     res.status(201).json({
       status: 'success',
-      data: {
-        city: newCity,
-      },
+      data: { city: newCity },
     });
   } catch (err) {
     next(new AppError(err.message, 400));

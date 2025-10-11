@@ -17,28 +17,36 @@ exports.getMe = (req, res, next) => {
 };
 
 exports.updateMe = async (req, res, next) => {
-  if (!req.body.password || !req.body.confirmPassword) {
+  if (req.body.password || req.body.passwordConfirm) {
     return next(
       new AppError(
         'This route is not for password updates. Please use /updateMyPassword.',
-        400
-      )
+        400,
+      ),
     );
   }
 
-  const filteredBody = filterObj(req.body, 'name', 'email');
+  const filteredBody = filterObj(req.body, 'firstname', 'lastname', 'email');
 
-  const updateUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
-    new: true,
-    runValidators: true,
-  });
+  try {
+    const updateUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
+      new: true,
+      runValidators: true,
+    });
 
-  res.status(200).json({
-    status: 'success',
-    data: {
-      use: updateUser,
-    },
-  });
+    if (!updateUser) {
+      return next(new AppError('No user found with that ID', 404));
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user: updateUser,
+      },
+    });
+  } catch (err) {
+    next(new AppError(err.message, 500));
+  }
 };
 
 exports.deleteMe = async (req, res, next) => {
@@ -53,14 +61,16 @@ exports.deleteMe = async (req, res, next) => {
   }
 };
 
-// exports.createUser = (req, res) => {
-//     res.status(500).json({
-//         status: 'error',
-//         message: 'This route is not defined! Please use /signup instead'
-//     });
-// };
+/*
+exports.createUser = (req, res) => {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is not defined! Please use /signup instead'
+    });
+};
+*/
 
-exports.getUser = factory.getOne(User);
+exports.getUser = factory.getOne(User, { path: 'cities' });
 exports.getAllUser = factory.getAll(User);
 exports.createUser = factory.createOne(User);
 exports.updateUser = factory.updateOne(User);
