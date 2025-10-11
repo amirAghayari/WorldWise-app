@@ -77,7 +77,7 @@ function Form() {
     if (!cityName || !date) return;
 
     const newCity = {
-      cityName,
+      name: cityName,
       country,
       emoji,
       date,
