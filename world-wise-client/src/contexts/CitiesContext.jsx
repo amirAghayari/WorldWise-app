@@ -57,18 +57,32 @@ function CitiesProvider({ children }) {
     initialState
   );
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem("token");
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  };
+
   // 🟩 GET /cities
   useEffect(() => {
     async function fetchCities() {
       dispatch({ type: "loading" });
       try {
-        const res = await fetch(`${BASE_URL}/cities`);
+        const res = await fetch(`${BASE_URL}/cities`, {
+          headers: {
+            "Content-Type": "application/json",
+            ...getAuthHeaders(),
+          },
+          credentials: "include",
+        });
+
+        if (!res.ok) throw new Error("Unauthorized or failed to fetch");
+
         const data = await res.json();
         dispatch({ type: "cities/loaded", payload: data.data.cities });
-      } catch {
+      } catch (err) {
         dispatch({
           type: "rejected",
-          payload: "There was an error loading cities...",
+          payload: err.message || "There was an error loading cities...",
         });
       }
     }
@@ -82,13 +96,22 @@ function CitiesProvider({ children }) {
 
       dispatch({ type: "loading" });
       try {
-        const res = await fetch(`${BASE_URL}/cities/${id}`);
+        const res = await fetch(`${BASE_URL}/cities/${id}`, {
+          headers: {
+            "Content-Type": "application/json",
+            ...getAuthHeaders(),
+          },
+          credentials: "include",
+        });
+
+        if (!res.ok) throw new Error("Unauthorized or failed to fetch city");
+
         const data = await res.json();
         dispatch({ type: "city/loaded", payload: data.data.city });
-      } catch {
+      } catch (err) {
         dispatch({
           type: "rejected",
-          payload: "There was an error loading the city...",
+          payload: err.message || "There was an error loading the city...",
         });
       }
     },
@@ -101,15 +124,22 @@ function CitiesProvider({ children }) {
     try {
       const res = await fetch(`${BASE_URL}/cities`, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(),
+        },
+        credentials: "include",
         body: JSON.stringify(newCity),
-        headers: { "Content-Type": "application/json" },
       });
+
+      if (!res.ok) throw new Error("Unauthorized or failed to create city");
+
       const data = await res.json();
       dispatch({ type: "city/created", payload: data.data.city });
-    } catch {
+    } catch (err) {
       dispatch({
         type: "rejected",
-        payload: "There was an error creating the city...",
+        payload: err.message || "There was an error creating the city...",
       });
     }
   }
@@ -119,18 +149,28 @@ function CitiesProvider({ children }) {
     if (!id) return;
     dispatch({ type: "loading" });
     try {
-      const res = await fetch(`${BASE_URL}/cities/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Failed to delete city");
+      const res = await fetch(`${BASE_URL}/cities/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(),
+        },
+        credentials: "include",
+      });
+
+      if (!res.ok) throw new Error("Unauthorized or failed to delete city");
+
       dispatch({ type: "city/deleted", payload: id });
-    } catch {
+    } catch (err) {
       dispatch({
         type: "rejected",
-        payload: "There was an error deleting the city...",
+        payload: err.message || "There was an error deleting the city...",
       });
     }
   }
 
   console.log("Cities:", cities);
+  console.log("Token:", localStorage.getItem("token"));
 
   return (
     <CitiesContext.Provider
