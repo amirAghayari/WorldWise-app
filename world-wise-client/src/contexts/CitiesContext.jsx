@@ -169,8 +169,6 @@ function CitiesProvider({ children }) {
     }
   }
 
-  console.log("Cities:", cities);
-  console.log("Token:", localStorage.getItem("token"));
 
   return (
     <CitiesContext.Provider
