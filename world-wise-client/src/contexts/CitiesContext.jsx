@@ -5,6 +5,7 @@ import {
   useReducer,
   useCallback,
 } from "react";
+import axios from "axios";
 import { BASE_URL } from "../config";
 
 const CitiesContext = createContext();
@@ -19,7 +20,7 @@ const initialState = {
 function reducer(state, action) {
   switch (action.type) {
     case "loading":
-      return { ...state, isLoading: true };
+      return { ...state, isLoading: true, error: "" };
 
     case "cities/loaded":
       return { ...state, isLoading: false, cities: action.payload };
@@ -51,124 +52,97 @@ function reducer(state, action) {
   }
 }
 
+const api = axios.create({
+  baseURL: BASE_URL,
+  headers: { "Content-Type": "application/json" },
+  withCredentials: true,
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
 function CitiesProvider({ children }) {
   const [{ cities, isLoading, currentCity, error }, dispatch] = useReducer(
     reducer,
     initialState
   );
 
-  const getAuthHeaders = () => {
-    const token = localStorage.getItem("token");
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  };
-
-  // 🟩 GET /cities
   useEffect(() => {
     async function fetchCities() {
       dispatch({ type: "loading" });
       try {
-        const res = await fetch(`${BASE_URL}/cities`, {
-          headers: {
-            "Content-Type": "application/json",
-            ...getAuthHeaders(),
-          },
-          credentials: "include",
-        });
-
-        if (!res.ok) throw new Error("Unauthorized or failed to fetch");
-
-        const data = await res.json();
-        dispatch({ type: "cities/loaded", payload: data.data.cities });
+        const res = await api.get("/cities");
+        dispatch({ type: "cities/loaded", payload: res.data.data.cities });
       } catch (err) {
         dispatch({
           type: "rejected",
-          payload: err.message || "There was an error loading cities...",
+          payload:
+            err.response?.data?.message ||
+            err.message ||
+            "There was an error loading cities...",
         });
       }
     }
+
     fetchCities();
   }, []);
 
-  // 🟩 GET /cities/:id
   const getCity = useCallback(
     async (id) => {
       if (id === currentCity._id) return;
 
       dispatch({ type: "loading" });
       try {
-        const res = await fetch(`${BASE_URL}/cities/${id}`, {
-          headers: {
-            "Content-Type": "application/json",
-            ...getAuthHeaders(),
-          },
-          credentials: "include",
-        });
-
-        if (!res.ok) throw new Error("Unauthorized or failed to fetch city");
-
-        const data = await res.json();
-        dispatch({ type: "city/loaded", payload: data.data.city });
+        const res = await api.get(`/cities/${id}`);
+        dispatch({ type: "city/loaded", payload: res.data.data.city });
       } catch (err) {
         dispatch({
           type: "rejected",
-          payload: err.message || "There was an error loading the city...",
+          payload:
+            err.response?.data?.message ||
+            err.message ||
+            "There was an error loading the city...",
         });
       }
     },
     [currentCity._id]
   );
 
-  // 🟩 POST /cities
   async function createCity(newCity) {
     dispatch({ type: "loading" });
     try {
-      const res = await fetch(`${BASE_URL}/cities`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...getAuthHeaders(),
-        },
-        credentials: "include",
-        body: JSON.stringify(newCity),
-      });
-
-      if (!res.ok) throw new Error("Unauthorized or failed to create city");
-
-      const data = await res.json();
-      dispatch({ type: "city/created", payload: data.data.city });
+      const res = await api.post("/cities", newCity);
+      dispatch({ type: "city/created", payload: res.data.data.city });
     } catch (err) {
       dispatch({
         type: "rejected",
-        payload: err.message || "There was an error creating the city...",
+        payload:
+          err.response?.data?.message ||
+          err.message ||
+          "There was an error creating the city...",
       });
     }
   }
 
-  // 🟩 DELETE /cities/:id
   async function deleteCity(id) {
     if (!id) return;
     dispatch({ type: "loading" });
     try {
-      const res = await fetch(`${BASE_URL}/cities/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          ...getAuthHeaders(),
-        },
-        credentials: "include",
-      });
-
-      if (!res.ok) throw new Error("Unauthorized or failed to delete city");
-
+      await api.delete(`/cities/${id}`);
       dispatch({ type: "city/deleted", payload: id });
     } catch (err) {
       dispatch({
         type: "rejected",
-        payload: err.message || "There was an error deleting the city...",
+        payload:
+          err.response?.data?.message ||
+          err.message ||
+          "There was an error deleting the city...",
       });
     }
   }
-
 
   return (
     <CitiesContext.Provider

@@ -24,7 +24,7 @@ function City() {
     [id, getCity]
   );
 
-  const { cityName, emoji, date, notes } = currentCity;
+  const { name: cityName, emoji, date, notes } = currentCity;
 
   if (isLoading) return <Spinner />;
 
@@ -44,8 +44,8 @@ function City() {
 
       {notes && (
         <div className={styles.row}>
-          <h6>Your notes</h6>
-          <p>{notes}</p>
+          <h6 className={styles.h6}>Your notes:</h6>
+          <p className={styles.notes}>{notes}</p>
         </div>
       )}
 
