@@ -16,6 +16,7 @@ const Pricing = lazy(() => import("./pages/Pricing"));
 const AppLayout = lazy(() => import("./pages/AppLayout"));
 const Signup = lazy(() => import("./pages/auth/Signup"));
 const Login = lazy(() => import("./pages/auth/Login"));
+const UpdateProfile = lazy(() => import("./pages/UpdateProfile"));
 const PageNotFound = lazy(() => import("./pages/PageNotFound"));
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
               <Route path="cities/:id" element={<City />} />
               <Route path="countries" element={<CountryList />} />
               <Route path="form" element={<Form />} />
+              <Route path="update-profile" element={<UpdateProfile />} />
             </Route>
 
             <Route path="*" element={<PageNotFound />} />

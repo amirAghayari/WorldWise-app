@@ -1,0 +1,116 @@
+.form {
+  width: 40rem;
+  margin: 2rem auto;
+  padding: 2rem;
+  border: 1px solid var(--color-dark--3);
+  border-radius: 8px;
+  background-color: var(--color-dark--1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.avatarSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+  border-radius: 20%;
+  overflow: hidden;
+  width: 10rem;
+  height: 10rem;
+  padding: 0 0.5rem;
+  border: 2px solid var(--color-brand--3);
+}
+
+.avatarLabel {
+  cursor: pointer;
+  text-align: center;
+  color: var(--color-brand--2);
+  font-size: 1.4rem;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.avatarPreview {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.changeText {
+  display: block;
+  margin-top: 0.5rem;
+  color: var(--color-brand--2);
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.inputGroup {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+  color: var(--color-light--2);
+  font-size: 1.4rem;
+  font-weight: 500;
+  font-family: var(--font-family);
+}
+
+.input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid var(--color-dark--3);
+  border-radius: 4px;
+  background-color: var(--color-dark--2);
+  color: var(--color-light--1);
+  font-size: 1.4rem;
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+}
+
+.input:focus {
+  color: var(--color-light--2);
+  border: 1px solid var(--color-brand--2);
+  background-color: var(--color-dark--1);
+}
+
+.error {
+  color: var(--color-error);
+  font-size: 1.2rem;
+  margin-top: 0.25rem;
+}
+
+.serverError {
+  color: var(--color-error);
+  font-size: 1.4rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.submitButton {
+  background-color: var(--color-brand--3);
+  color: var(--color-light--2);
+  padding: 1.2rem 2rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.6rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.submitButton:hover {
+  background-color: var(--color-success);
+  transform: translateY(-2px);
+}
