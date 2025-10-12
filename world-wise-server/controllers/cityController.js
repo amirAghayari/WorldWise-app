@@ -53,7 +53,6 @@ exports.createCity = async (req, res, next) => {
 
     const newCity = await City.create(req.body);
 
-    // اضافه کردن city به آرایه cities یوزر
     await User.findByIdAndUpdate(
       req.user._id,
       { $addToSet: { cities: newCity._id } },
@@ -75,7 +74,6 @@ exports.deleteCity = async (req, res, next) => {
       return next(new AppError('User not logged in', 401));
     }
 
-    // حذف city از آرایه cities یوزر
     await User.findByIdAndUpdate(
       req.user._id,
       { $pull: { cities: req.params.id } },
