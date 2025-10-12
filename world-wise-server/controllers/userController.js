@@ -5,14 +5,23 @@ const factory = require('./handleFactory');
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
 
+  const permittedFields = ['firstname', 'lastname', 'username', 'avatar'];
+
   Object.keys(obj).forEach((el) => {
-    if (allowedFields.includes(el)) newObj[el] = obj[el];
+    if (permittedFields.includes(el)) {
+      newObj[el] = obj[el];
+    }
   });
   return newObj;
 };
 
 exports.getMe = (req, res, next) => {
   req.params.id = req.user.id;
+  next();
+};
+exports.filterUpdateBody = (req, res, next) => {
+  req.filteredBody = filterObj(req.body);
+
   next();
 };
 
@@ -26,22 +35,22 @@ exports.updateMe = async (req, res, next) => {
     );
   }
 
-  const filteredBody = filterObj(req.body, 'email');
-
   try {
-    const updateUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
+    const updateData = req.filteredBody;
+
+    const updatedUser = await User.findByIdAndUpdate(req.user.id, updateData, {
       new: true,
       runValidators: true,
     });
 
-    if (!updateUser) {
+    if (!updatedUser) {
       return next(new AppError('No user found with that ID', 404));
     }
 
     res.status(200).json({
       status: 'success',
       data: {
-        user: updateUser,
+        user: updatedUser,
       },
     });
   } catch (err) {

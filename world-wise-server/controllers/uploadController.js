@@ -3,13 +3,11 @@ const fs = require('fs');
 const path = require('path');
 const AppError = require('./../utils/appError');
 
-// Ensure uploads directory exists
 const uploadDir = path.join(__dirname, '../uploads');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
 }
 
-// File filter for images only
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image/')) {
     cb(null, true);
@@ -31,10 +29,17 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 4 * 1024 * 1024 }, // 4MB limit
+  limits: { fileSize: 4 * 1024 * 1024 },
 });
 
 exports.uploadImage = upload.single('avatar');
+
+exports.setAvatarFilename = (req, res, next) => {
+  if (req.file) {
+    req.body.avatar = req.file.filename;
+  }
+  next();
+};
 
 exports.handleImageUpload = (req, res, next) => {
   if (!req.file) return next(new AppError('No file uploaded! ', 400));

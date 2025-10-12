@@ -86,12 +86,13 @@ export default function UpdateProfile() {
   };
 
   const onSubmit = async (data) => {
+    console.log("Form data to submit:", data);
+    setIsLoading(true);
+    setServerError("");
     try {
-      setIsLoading(true);
-      setServerError("");
-
       const token = localStorage.getItem("token");
       const formData = new FormData();
+
       formData.append("firstname", data.firstname);
       formData.append("lastname", data.lastname);
       formData.append("username", data.username);
@@ -107,10 +108,11 @@ export default function UpdateProfile() {
 
       if (res.data.status === "success") {
         setUpdateSuccess(true);
-        setTimeout(() => navigate("/profile"), 2000);
+        setUserData(res.data.data.user);
+        setPreview(res.data.data.user.avatar);
+        setTimeout(() => navigate("/app/cities"), 2000);
       }
     } catch (err) {
-      console.error("Update error:", err);
       const errorMessage =
         err.response?.data?.message ||
         "An error occurred while updating profile.";
